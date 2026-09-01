@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RasterLab – Modern Raster Data Analyzer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="#" class="brand">
+                <i class="fa-solid fa-layer-group brand-icon"></i>
+                <span>Raster<span class="highlight">Lab</span></span>
+            </a>
+            <nav class="nav-links">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#analyzer" class="nav-link">Analyzer</a>
+                <a href="#about" class="nav-link">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span id="typed-text"></span><span class="cursor">&nbsp;</span>
+                </h1>
+                <p class="hero-subtitle">
+                    High-performance geospatial raster normalization platform. Process remote sensing imagery, preserve coordinate metadata, and standardize array bands seamlessly.
+                </p>
+                <a href="#analyzer" class="btn btn-primary">
+                    <i class="fa-solid fa-microchip"></i> Start Processing
+                </a>
+            </div>
+        </section>
+
+        <section id="analyzer" class="analyzer-section">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-sliders"></i> GeoTIFF Normalization Engine</h2>
+                    <span class="status-badge"><i class="fa-solid fa-circle"></i> Engine Ready</span>
+                </div>
+
+                <div class="upload-zone" id="drop-zone">
+                    <input type="file" id="file-input" accept=".tif,.tiff" class="file-input-hidden">
+                    <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                    <h3>Drag & Drop GeoTIFF file here</h3>
+                    <p class="upload-sub">Supports single or multi-band GeoTIFF formats (.tif, .tiff)</p>
+                    <button class="btn btn-secondary" id="browse-btn" type="button">
+                        <i class="fa-solid fa-folder-open"></i> Browse Files
+                    </button>
+                </div>
+
+                <div class="file-details hidden" id="file-details">
+                    <div class="file-info-content">
+                        <i class="fa-solid fa-file-image file-icon"></i>
+                        <div class="file-meta-text">
+                            <span id="file-name" class="file-name-str">filename.tif</span>
+                            <span id="file-size" class="file-size-str">0 MB</span>
+                        </div>
+                    </div>
+                    <button id="remove-file-btn" class="btn-icon" title="Remove File">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="action-bar">
+                    <button id="normalize-btn" class="btn btn-action" disabled>
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Normalize Raster
+                    </button>
+                </div>
+
+                <div id="progress-container" class="progress-wrapper hidden">
+                    <div class="progress-bar-label">
+                        <span>Processing Spatial Array Bands...</span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                </div>
+
+                <div id="result-container" class="result-block hidden">
+                    <div class="alert alert-success">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span id="success-msg">Raster normalized successfully!</span>
+                    </div>
+
+                    <div class="metadata-grid">
+                        <div class="meta-card">
+                            <i class="fa-solid fa-arrows-left-right-to-line"></i>
+                            <div class="meta-info">
+                                <span class="meta-label">Width</span>
+                                <span class="meta-val" id="meta-width">-</span>
+                            </div>
+                        </div>
+                        <div class="meta-card">
+                            <i class="fa-solid fa-arrows-up-down-to-line"></i>
+                            <div class="meta-info">
+                                <span class="meta-label">Height</span>
+                                <span class="meta-val" id="meta-height">-</span>
+                            </div>
+                        </div>
+                        <div class="meta-card">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <div class="meta-info">
+                                <span class="meta-label">Bands</span>
+                                <span class="meta-val" id="meta-bands">-</span>
+                            </div>
+                        </div>
+                        <div class="meta-card">
+                            <i class="fa-solid fa-globe"></i>
+                            <div class="meta-info">
+                                <span class="meta-label">CRS</span>
+                                <span class="meta-val" id="meta-crs">-</span>
+                            </div>
+                        </div>
+                        <div class="meta-card">
+                            <i class="fa-solid fa-database"></i>
+                            <div class="meta-info">
+                                <span class="meta-label">Original Type</span>
+                                <span class="meta-val" id="meta-dtype">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a id="download-btn" href="#" class="btn btn-download" download>
+                        <i class="fa-solid fa-download"></i> Download Normalized GeoTIFF
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="about-section">
+            <div class="about-card">
+                <h2><i class="fa-solid fa-circle-info"></i> About RasterLab</h2>
+                <p>
+                    RasterLab provides standard spatial dataset normalization using numerical transformation. Converting imagery bands to float range $[0, 1]$ removes gain discrepancies while preserving original spatial georeferencing, affine transforms, and Coordinate Reference Systems (CRS).
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 RasterLab Spatial Processing Systems. Built for GIS & Remote Sensing Workflows.</p>
+        <div class="hamim">
+            <p> Syed Mahfuzur Rahman ||</p>
+            <p> Student Id: 240408 ||</p>
+             <p> Khulna University, Khulna </p>
+        </div>
+        
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
