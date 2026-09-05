@@ -62,6 +62,9 @@ body {
 .brand .highlight {
     color: var(--accent-blue);
 }
+.highlight {
+     color: var(--accent-blue);
+}
 
 .version-tag {
     font-size: 0.7rem;
