@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About – RasterLab</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="brand">
+                <i class="fa-solid fa-layer-group brand-icon"></i>
+                <span>Raster<span class="highlight">Lab</span> <span class="version-tag">v2.0</span></span>
+            </a>
+            <nav class="nav-links">
+                <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('index') }}#analyzer" class="nav-link">Analyzer</a>
+                <a href="{{ url_for('about') }}" class="nav-link active">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="about-page-container">
+        
+        <section class="about-hero">
+            <h1 class="page-title">Project Context &amp; Credits</h1>
+            <p class="page-subtitle">
+                RasterLab is developed as an academic and practical spatial data normalization suite under expert guidance at Khulna University.
+            </p>
+        </section>
+
+        <section class="cards-grid">
+            
+            <!-- Card 1: Author Profile -->
+            <div class="profile-card dashboard-card">
+                <div class="card-badge">Developer</div>
+                <div class="avatar-wrapper">
+                    <!-- Replace image path with your own image when ready -->
+                    <img src="{{ url_for('static', filename='images/author.jpg') }}" alt="Syed Mahfuzur Rahman" class="profile-img" onerror="this.src='https://via.placeholder.com/150/121824/00d2ff?text=SMR';">
+                </div>
+                <h2 class="profile-name">Syed Mahfuzur Rahman</h2>
+                <p class="profile-role"><i class="fa-solid fa-graduation-cap"></i> Undergraduate Researcher</p>
+                
+                <div class="info-list">
+                    <div class="info-item">
+                        <span class="info-label">Academic Year</span>
+                        <span class="info-value">2nd Year, 2nd Term</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Discipline</span>
+                        <span class="info-value">Urban and Rural Planning</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Institution</span>
+                        <span class="info-value">Khulna University</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Supervisor / Professor Info -->
+            <div class="profile-card dashboard-card">
+                <div class="card-badge badge-purple">Course Instructor</div>
+                <div class="professor-avatar-placeholder">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <h2 class="profile-name">Course Advisor</h2>
+                <p class="profile-role"><i class="fa-solid fa-chalkboard-user"></i> Department Faculty</p>
+                
+                <p class="prof-desc">
+                    Supervising research and practical implementations in Geographic Information Systems (GIS), spatial data analysis, and digital raster processing tools.
+                </p>
+
+                <div class="info-list">
+                    <div class="info-item">
+                        <span class="info-label">Discipline</span>
+                        <span class="info-value">Urban and Rural Planning</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Official Portal</span>
+                        <span class="info-value">
+                            <a href="https://ku.ac.bd" target="_blank" class="ext-link">
+                                Khulna University Website <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: University Info -->
+            <div class="profile-card dashboard-card university-card">
+                <div class="card-badge badge-green">Institution</div>
+                <div class="university-logo-wrapper">
+                    <i class="fa-solid fa-building-columns uni-icon"></i>
+                </div>
+                <h2 class="profile-name">Khulna University</h2>
+                <p class="profile-role"><i class="fa-solid fa-location-dot"></i> Khulna, Bangladesh</p>
+                
+                <p class="uni-desc">
+                    Urban and Rural Planning (URP) Discipline at Khulna University focuses on spatial analysis, sustainable development, smart cities, and advanced GIS technology applications.
+                </p>
+
+                <a href="https://ku.ac.bd" target="_blank" class="btn btn-secondary uni-btn">
+                    <i class="fa-solid fa-globe"></i> Visit KU Official Website
+                </a>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 RasterLab Spatial Processing Systems | Urban and Rural Planning Discipline, Khulna University.</p>
+    </footer>
+
+</body>
+</html>

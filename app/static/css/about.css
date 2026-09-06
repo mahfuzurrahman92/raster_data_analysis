@@ -1,0 +1,175 @@
+.about-page-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+}
+
+.about-hero {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    background: linear-gradient(135deg, #ffffff 0%, var(--accent-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+    max-width: 650px;
+    margin: 0 auto;
+    font-size: 0.95rem;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.8rem;
+    align-items: stretch;
+}
+
+.profile-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-blue);
+}
+
+.card-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: rgba(0, 210, 255, 0.15);
+    color: var(--accent-blue);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-purple {
+    background: rgba(146, 84, 222, 0.15);
+    color: var(--accent-purple);
+}
+
+.badge-green {
+    background: rgba(0, 230, 118, 0.15);
+    color: var(--accent-green);
+}
+
+.avatar-wrapper {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: 3px solid var(--accent-blue);
+    padding: 3px;
+    margin-top: 1rem;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+}
+
+.profile-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #0a0d14;
+}
+
+.professor-avatar-placeholder, .university-logo-wrapper {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #182030;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: var(--accent-purple);
+    margin-top: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.university-logo-wrapper {
+    color: var(--accent-green);
+}
+
+.profile-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.2rem;
+}
+
+.profile-role {
+    font-size: 0.85rem;
+    color: var(--accent-blue);
+    margin-bottom: 1.2rem;
+}
+
+.prof-desc, .uni-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.info-list {
+    width: 100%;
+    background: #0a0d14;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin-top: auto;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.82rem;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: var(--text-muted);
+}
+
+.info-value {
+    color: #fff;
+    font-weight: 500;
+}
+
+.ext-link {
+    color: var(--accent-blue);
+    text-decoration: none;
+}
+
+.ext-link:hover {
+    text-decoration: underline;
+}
+
+.uni-btn {
+    margin-top: auto;
+    width: 100%;
+    justify-content: center;
+}

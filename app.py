@@ -114,6 +114,10 @@ def convert_image_to_geotiff(input_path, output_path):
 def index():
     return render_template("index.html")
 
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
 
 @app.route("/api/read-raster", methods=["POST"])
 def read_raster():
