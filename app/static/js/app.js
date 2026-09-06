@@ -1,10 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Dynamic Hero Typing Animation
     const phrases = [
         "Welcome to Raster Data Analyzer",
-        "Welcome to Spatial Data Processor",
-        "Welcome to GeoTIFF Normalizer",
-        "Welcome to GIS Analysis Lab"
+        "Welcome to Image Normalization Lab",
+        "Welcome to GeoTIFF & JPG Processor"
     ];
     let phraseIdx = 0, charIdx = 0, isDeleting = false;
     const typedTextSpan = document.getElementById("typed-text");
@@ -32,18 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    // Palette Definition Mapping for JS Grid Rendering
     const PALETTES = {
-        viridis: [
-            [68, 1, 84], [72, 35, 116], [64, 67, 135], [52, 94, 141],
-            [41, 120, 142], [32, 144, 141], [34, 168, 132], [68, 190, 112],
-            [121, 209, 81], [189, 223, 38], [253, 231, 37]
-        ],
-        turbo: [
-            [48, 18, 59], [70, 107, 227], [40, 187, 246], [36, 248, 160],
-            [162, 252, 60], [238, 207, 48], [251, 126, 33], [208, 33, 13],
-            [122, 4, 3]
-        ],
+        viridis: [[68, 1, 84], [72, 35, 116], [64, 67, 135], [52, 94, 141], [41, 120, 142], [32, 144, 141], [34, 168, 132], [68, 190, 112], [121, 209, 81], [189, 223, 38], [253, 231, 37]],
+        turbo: [[48, 18, 59], [70, 107, 227], [40, 187, 246], [36, 248, 160], [162, 252, 60], [238, 207, 48], [251, 126, 33], [208, 33, 13], [122, 4, 3]],
         grayscale: [[0, 0, 0], [255, 255, 255]],
         terrain: [[51, 102, 0], [102, 153, 0], [204, 204, 102], [153, 102, 51], [204, 153, 102], [255, 255, 255]]
     };
@@ -73,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return `rgb(${r}, ${g}, ${b})`;
     }
 
-    // DOM References
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
     const browseBtn = document.getElementById('browse-btn');
@@ -82,13 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileSizeDisplay = document.getElementById('file-size');
     const removeFileBtn = document.getElementById('remove-file-btn');
 
-    // Cards
     const metadataCard = document.getElementById('metadata-card');
     const rawGridCard = document.getElementById('raw-grid-card');
     const normalizeCard = document.getElementById('normalize-card');
     const normResultCard = document.getElementById('normalized-result-card');
 
-    // Meta Displays
     const metaWidth = document.getElementById('meta-width');
     const metaHeight = document.getElementById('meta-height');
     const metaBands = document.getElementById('meta-bands');
@@ -99,42 +85,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const statMax = document.getElementById('stat-max');
     const statMean = document.getElementById('stat-mean');
 
-    // Controls
     const bandSelect = document.getElementById('band-select');
     const gridRowsInput = document.getElementById('grid-rows');
     const gridColsInput = document.getElementById('grid-cols');
     const buildGridBtn = document.getElementById('build-grid-btn');
     const normalizeBtn = document.getElementById('normalize-btn');
+    const exportFormatSelect = document.getElementById('export-format-select');
 
-    // Tables
     const rawPixelTable = document.getElementById('raw-pixel-table');
     const normPixelTable = document.getElementById('norm-pixel-table');
 
-    // Toggles
     const rawToggleLabels = document.getElementById('raw-toggle-labels');
     const rawToggleValues = document.getElementById('raw-toggle-values');
     const normToggleLabels = document.getElementById('norm-toggle-labels');
     const normToggleValues = document.getElementById('norm-toggle-values');
     const paletteSelect = document.getElementById('palette-select');
 
-    // Progress & Downloads
     const progressContainer = document.getElementById('progress-container');
     const progressFill = document.getElementById('progress-fill');
     const progressPercent = document.getElementById('progress-percent');
-    const downloadTiffBtn = document.getElementById('download-tiff-btn');
+    const downloadFileBtn = document.getElementById('download-file-btn');
 
-    // Exports
     const exportRawCsvBtn = document.getElementById('export-raw-csv-btn');
     const exportRawPngBtn = document.getElementById('export-raw-png-btn');
     const exportNormCsvBtn = document.getElementById('export-norm-csv-btn');
     const exportNormPngBtn = document.getElementById('export-norm-png-btn');
 
-    // Application State
     let currentFile = null;
     let currentFileId = null;
     let rasterMetadata = null;
 
-    // File Input Handlers
     browseBtn.addEventListener('click', () => fileInput.click());
 
     fileInput.addEventListener('change', (e) => {
@@ -160,9 +140,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function handleFileSelection(file) {
+        const validExts = ['tif', 'tiff', 'jpg', 'jpeg', 'png', 'img'];
         const ext = file.name.split('.').pop().toLowerCase();
-        if (ext !== 'tif' && ext !== 'tiff') {
-            alert('Invalid file type! Please select a valid GeoTIFF (.tif, .tiff) file.');
+        if (!validExts.includes(ext)) {
+            alert('Invalid file format! Supported formats: .tif, .tiff, .jpg, .jpeg, .png, .img');
             return;
         }
 
@@ -171,7 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fileSizeDisplay.textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
         fileDetails.classList.remove('hidden');
 
-        // Reset visibility
         normResultCard.classList.add('hidden');
         loadRasterMetadata(1);
     }
@@ -203,14 +183,13 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(res => res.json())
         .then(data => {
             if (!data.success) {
-                alert('Error reading raster: ' + data.error);
+                alert('Error reading file: ' + data.error);
                 return;
             }
 
             rasterMetadata = data;
             currentFileId = data.file_id;
 
-            // Populate Metadata Fields
             metaWidth.textContent = data.width + ' px';
             metaHeight.textContent = data.height + ' px';
             metaBands.textContent = data.total_bands;
@@ -222,7 +201,6 @@ document.addEventListener('DOMContentLoaded', () => {
             statMax.textContent = data.stats.max;
             statMean.textContent = data.stats.mean;
 
-            // Populate Band Selector Options
             bandSelect.innerHTML = '';
             for (let i = 1; i <= data.total_bands; i++) {
                 const opt = document.createElement('option');
@@ -239,19 +217,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (rasterMetadata.norm_grid) renderNormTable();
         })
         .catch(err => {
-            alert('Server communication error: ' + err.message);
+            alert('Server error: ' + err.message);
         });
     }
 
-    bandSelect.addEventListener('change', () => {
-        loadRasterMetadata(parseInt(bandSelect.value));
-    });
+    bandSelect.addEventListener('change', () => loadRasterMetadata(parseInt(bandSelect.value)));
+    buildGridBtn.addEventListener('click', () => loadRasterMetadata(parseInt(bandSelect.value)));
 
-    buildGridBtn.addEventListener('click', () => {
-        loadRasterMetadata(parseInt(bandSelect.value));
-    });
-
-    // Render Raw Matrix Grid
     function renderRawTable() {
         if (!rasterMetadata || !rasterMetadata.raw_grid) return;
 
@@ -262,7 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const showValues = rawToggleValues.checked;
 
         let html = '';
-
         if (showLabels) {
             html += '<thead><tr><th>R/C</th>';
             for (let c = 1; c <= cols; c++) html += `<th>C${c}</th>`;
@@ -286,7 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
         rawGridCard.classList.remove('hidden');
     }
 
-    // Render Normalized Matrix Heatmap Grid
     function renderNormTable() {
         if (!rasterMetadata || !rasterMetadata.norm_grid) return;
 
@@ -298,7 +268,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedPalette = paletteSelect.value;
 
         let html = '';
-
         if (showLabels) {
             html += '<thead><tr><th>R/C</th>';
             for (let c = 1; c <= cols; c++) html += `<th>C${c}</th>`;
@@ -313,8 +282,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const val = grid[r][c];
                 const bg = getColorForValue(val, selectedPalette);
                 const displayVal = (val === null || !showValues) ? '' : val;
-                
-                // Adjust text color based on palette intensity
                 const textColor = (selectedPalette === 'grayscale' && val > 0.5) ? '#000' : '#fff';
                 html += `<td style="background-color: ${bg}; color: ${textColor};">${displayVal}</td>`;
             }
@@ -326,41 +293,40 @@ document.addEventListener('DOMContentLoaded', () => {
         normResultCard.classList.remove('hidden');
     }
 
-    // Toggle Listeners
     rawToggleLabels.addEventListener('change', renderRawTable);
     rawToggleValues.addEventListener('change', renderRawTable);
     normToggleLabels.addEventListener('change', renderNormTable);
     normToggleValues.addEventListener('change', renderNormTable);
     paletteSelect.addEventListener('change', renderNormTable);
 
-    // Perform Normalization Request
     normalizeBtn.addEventListener('click', () => {
         if (!currentFileId) return;
 
         progressContainer.classList.remove('hidden');
-        progressFill.style.width = '30%';
-        progressPercent.textContent = '30%';
+        progressFill.style.width = '40%';
+        progressPercent.textContent = '40%';
+
+        const selectedFormat = exportFormatSelect.value;
 
         fetch('/api/normalize', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ file_id: currentFileId })
+            body: JSON.stringify({ file_id: currentFileId, format: selectedFormat })
         })
         .then(res => res.json())
         .then(data => {
             progressFill.style.width = '100%';
             progressPercent.textContent = '100%';
 
-            setTimeout(() => {
-                progressContainer.classList.add('hidden');
-            }, 500);
+            setTimeout(() => progressContainer.classList.add('hidden'), 500);
 
             if (!data.success) {
                 alert('Normalization Error: ' + data.error);
                 return;
             }
 
-            downloadTiffBtn.href = data.download_url;
+            downloadFileBtn.href = data.download_url;
+            downloadFileBtn.innerHTML = `<i class="fa-solid fa-download"></i> Download Normalized ${selectedFormat.toUpperCase()} File`;
             renderNormTable();
         })
         .catch(err => {
@@ -369,25 +335,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // CSV/PNG Export Triggers
     exportRawCsvBtn.addEventListener('click', () => {
-        if (!rasterMetadata) return;
-        triggerCsvExport(rasterMetadata.raw_grid, 'raw_grid');
+        if (rasterMetadata) triggerCsvExport(rasterMetadata.raw_grid, 'raw_grid');
     });
 
     exportNormCsvBtn.addEventListener('click', () => {
-        if (!rasterMetadata) return;
-        triggerCsvExport(rasterMetadata.norm_grid, 'normalized_grid');
+        if (rasterMetadata) triggerCsvExport(rasterMetadata.norm_grid, 'normalized_grid');
     });
 
     exportRawPngBtn.addEventListener('click', () => {
-        if (!rasterMetadata) return;
-        triggerPngExport(rasterMetadata.raw_grid, paletteSelect.value, 'raw');
+        if (rasterMetadata) triggerPngExport(rasterMetadata.raw_grid, paletteSelect.value, 'raw');
     });
 
     exportNormPngBtn.addEventListener('click', () => {
-        if (!rasterMetadata) return;
-        triggerPngExport(rasterMetadata.norm_grid, paletteSelect.value, 'normalized');
+        if (rasterMetadata) triggerPngExport(rasterMetadata.norm_grid, paletteSelect.value, 'normalized');
     });
 
     function triggerCsvExport(grid, type) {

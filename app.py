@@ -6,8 +6,8 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 import rasterio
 from rasterio.enums import Resampling
-from PIL import Image, ImageDraw, ImageFont
-import io
+from rasterio.transform import from_origin
+from PIL import Image, ImageDraw
 
 app = Flask(
     __name__,
@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent
 UPLOAD_FOLDER = BASE_DIR / "uploads"
 OUTPUT_FOLDER = BASE_DIR / "outputs"
 
-ALLOWED_EXTENSIONS = {"tif", "tiff"}
+ALLOWED_EXTENSIONS = {"tif", "tiff", "jpg", "jpeg", "png", "img"}
 MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # 100 MB Limit
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -58,21 +58,19 @@ def allowed_file(filename):
 
 def get_color_from_value(val, palette_name="viridis"):
     """Maps a normalized value [0, 1] to an RGB color tuple using selected palette."""
-    if np.isnan(val):
+    if val is None or np.isnan(val):
         return (30, 30, 30)  # Dark Gray for NoData
     
     val = float(np.clip(val, 0.0, 1.0))
     colors = COLOR_PALETTES.get(palette_name.lower(), COLOR_PALETTES["viridis"])
     
     if len(colors) == 2:
-        # Simple Linear Grayscale Interpolation
         c1, c2 = colors[0], colors[1]
         r = int(c1[0] + val * (c2[0] - c1[0]))
         g = int(c1[1] + val * (c2[1] - c1[1]))
         b = int(c1[2] + val * (c2[2] - c1[2]))
         return (r, g, b)
     
-    # Multi-step stops interpolation
     idx = val * (len(colors) - 1)
     lower_idx = int(np.floor(idx))
     upper_idx = int(np.ceil(idx))
@@ -88,6 +86,30 @@ def get_color_from_value(val, palette_name="viridis"):
     return (r, g, b)
 
 
+def convert_image_to_geotiff(input_path, output_path):
+    """Converts non-raster images (JPG, PNG, JPEG) into temporary GeoTIFF format for unified processing."""
+    with Image.open(input_path) as img:
+        img_rgb = img.convert("RGB")
+        arr = np.array(img_rgb)
+        
+        height, width, bands = arr.shape
+        transform = from_origin(0, 0, 1, 1)
+
+        with rasterio.open(
+            output_path,
+            "w",
+            driver="GTiff",
+            height=height,
+            width=width,
+            count=bands,
+            dtype=arr.dtype,
+            crs="EPSG:4326",
+            transform=transform,
+        ) as dst:
+            for b in range(bands):
+                dst.write(arr[:, :, b], b + 1)
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -95,7 +117,7 @@ def index():
 
 @app.route("/api/read-raster", methods=["POST"])
 def read_raster():
-    """Validates uploaded TIFF, reads metadata, and returns stats for the selected band."""
+    """Validates uploaded image/raster, reads metadata, and returns stats for selected band."""
     if "file" not in request.files:
         return jsonify({"success": False, "error": "No file portion in request."}), 400
 
@@ -104,34 +126,40 @@ def read_raster():
         return jsonify({"success": False, "error": "No file selected."}), 400
 
     if not (file and allowed_file(file.filename)):
-        return jsonify({"success": False, "error": "Invalid format. Only .tif and .tiff files allowed."}), 400
+        return jsonify({"success": False, "error": "Invalid format. Supported: .tif, .tiff, .jpg, .jpeg, .png, .img"}), 400
 
     try:
         orig_filename = secure_filename(file.filename)
+        ext = orig_filename.rsplit(".", 1)[1].lower()
         file_id = f"{uuid.uuid4().hex[:8]}_{orig_filename}"
         file_path = UPLOAD_FOLDER / file_id
         file.save(file_path)
+
+        # Handle standard image inputs by converting them internally to GeoTIFF structure
+        working_file_path = file_path
+        if ext in ["jpg", "jpeg", "png", "img"]:
+            geotiff_converted_path = UPLOAD_FOLDER / f"converted_{file_id}.tif"
+            convert_image_to_geotiff(file_path, geotiff_converted_path)
+            working_file_path = geotiff_converted_path
 
         band_param = request.form.get("band", 1, type=int)
         rows_param = request.form.get("rows", 20, type=int)
         cols_param = request.form.get("cols", 20, type=int)
 
-        # Enforce reasonable sampling limits
         rows_param = max(5, min(60, rows_param))
         cols_param = max(5, min(60, cols_param))
 
-        with rasterio.open(file_path) as src:
+        with rasterio.open(working_file_path) as src:
             total_bands = src.count
             width = src.width
             height = src.height
-            crs_str = str(src.crs) if src.crs else "Undefined / Unprojected"
+            crs_str = str(src.crs) if src.crs else "Unprojected Image Space"
             dtype_str = str(src.dtypes[0])
 
             selected_band = max(1, min(total_bands, band_param))
             band_data = src.read(selected_band)
             nodata_val = src.nodatavals[selected_band - 1]
 
-            # Build mask for valid pixels
             if nodata_val is not None:
                 valid_mask = (band_data != nodata_val)
                 if np.isnan(nodata_val):
@@ -147,21 +175,18 @@ def read_raster():
             else:
                 min_val = max_val = mean_val = 0.0
 
-            # Generate sampled raw grid for visualization
             sampled_raw = src.read(
                 selected_band,
                 out_shape=(rows_param, cols_param),
                 resampling=Resampling.bilinear
             ).astype(np.float64)
 
-            # Mask NoData in sampled grid if applicable
             if nodata_val is not None:
                 if np.isnan(nodata_val):
                     sampled_raw[np.isnan(sampled_raw)] = np.nan
                 else:
                     sampled_raw[sampled_raw == nodata_val] = np.nan
 
-            # Generate sampled normalized grid [0, 1]
             sampled_norm = np.full_like(sampled_raw, np.nan, dtype=np.float64)
             if max_val > min_val:
                 valid_samp = ~np.isnan(sampled_raw)
@@ -171,7 +196,6 @@ def read_raster():
                 valid_samp = ~np.isnan(sampled_raw)
                 sampled_norm[valid_samp] = 0.0
 
-            # Convert NaNs to None for clean JSON serialization
             raw_grid_list = np.where(np.isnan(sampled_raw), None, np.round(sampled_raw, 2)).tolist()
             norm_grid_list = np.where(np.isnan(sampled_norm), None, np.round(sampled_norm, 4)).tolist()
 
@@ -198,23 +222,31 @@ def read_raster():
         })
 
     except Exception as e:
-        return jsonify({"success": False, "error": f"Error reading raster: {str(e)}"}), 500
+        return jsonify({"success": False, "error": f"Error reading file: {str(e)}"}), 500
 
 
 @app.route("/api/normalize", methods=["POST"])
 def normalize_raster():
-    """Performs full-resolution Min-Max normalization on ALL bands and saves a float32 GeoTIFF."""
+    """Normalizes all bands and exports into requested format (.tif, .png, .jpg)."""
     data = request.get_json() or {}
     file_id = data.get("file_id")
+    export_format = data.get("format", "tif").lower()
 
     if not file_id:
         return jsonify({"success": False, "error": "File ID missing."}), 400
 
-    input_path = UPLOAD_FOLDER / secure_filename(file_id)
+    file_id = secure_filename(file_id)
+    input_path = UPLOAD_FOLDER / file_id
+    
+    ext = file_id.rsplit(".", 1)[1].lower() if "." in file_id else ""
+    if ext in ["jpg", "jpeg", "png", "img"]:
+        input_path = UPLOAD_FOLDER / f"converted_{file_id}.tif"
+
     if not input_path.exists():
         return jsonify({"success": False, "error": "Uploaded file not found on server."}), 404
 
-    output_filename = f"normalized_{file_id}"
+    base_name = file_id.rsplit(".", 1)[0]
+    output_filename = f"normalized_{base_name}.{export_format}"
     output_path = OUTPUT_FOLDER / output_filename
 
     try:
@@ -222,23 +254,13 @@ def normalize_raster():
             meta = src.meta.copy()
             band_count = src.count
 
-            meta.update({
-                "dtype": "float32",
-                "nodata": np.nan,
-                "compress": "deflate"
-            })
-
             normalized_bands = []
-
             for b_idx in range(1, band_count + 1):
                 band_data = src.read(b_idx)
                 nodata_val = src.nodatavals[b_idx - 1]
 
                 if nodata_val is not None:
-                    if np.isnan(nodata_val):
-                        valid_mask = ~np.isnan(band_data)
-                    else:
-                        valid_mask = (band_data != nodata_val)
+                    valid_mask = (~np.isnan(band_data)) if np.isnan(nodata_val) else (band_data != nodata_val)
                 else:
                     valid_mask = ~np.isnan(band_data)
 
@@ -246,8 +268,7 @@ def normalize_raster():
 
                 if np.any(valid_mask):
                     valid_pixels = band_data[valid_mask].astype(np.float32)
-                    b_min = np.min(valid_pixels)
-                    b_max = np.max(valid_pixels)
+                    b_min, b_max = np.min(valid_pixels), np.max(valid_pixels)
 
                     if b_max > b_min:
                         norm_band[valid_mask] = (valid_pixels - b_min) / (b_max - b_min)
@@ -256,9 +277,31 @@ def normalize_raster():
 
                 normalized_bands.append(norm_band)
 
-            with rasterio.open(output_path, "w", **meta) as dst:
-                for idx, norm_arr in enumerate(normalized_bands, start=1):
-                    dst.write(norm_arr, idx)
+            if export_format in ["tif", "tiff"]:
+                meta.update({
+                    "dtype": "float32",
+                    "nodata": np.nan,
+                    "compress": "deflate"
+                })
+                with rasterio.open(output_path, "w", **meta) as dst:
+                    for idx, norm_arr in enumerate(normalized_bands, start=1):
+                        dst.write(norm_arr, idx)
+
+            elif export_format in ["png", "jpg", "jpeg"]:
+                # Convert normalized bands [0.0 - 1.0] to 8-bit image array [0 - 255]
+                if band_count >= 3:
+                    rgb_stack = [np.nan_to_num(normalized_bands[i], nan=0.0) * 255.0 for i in range(3)]
+                    rgb_arr = np.stack(rgb_stack, axis=-1).astype(np.uint8)
+                    img = Image.fromarray(rgb_arr, mode="RGB")
+                else:
+                    gray_arr = (np.nan_to_num(normalized_bands[0], nan=0.0) * 255.0).astype(np.uint8)
+                    img = Image.fromarray(gray_arr, mode="L")
+
+                if export_format in ["jpg", "jpeg"]:
+                    img = img.convert("RGB")
+                    img.save(output_path, format="JPEG", quality=95)
+                else:
+                    img.save(output_path, format="PNG")
 
         return jsonify({
             "success": True,
@@ -273,7 +316,6 @@ def normalize_raster():
 
 @app.route("/api/export-csv", methods=["POST"])
 def export_csv():
-    """Exports raw or normalized sampled matrix values as CSV."""
     data = request.get_json() or {}
     grid = data.get("grid")
     grid_type = data.get("type", "raster_grid")
@@ -289,11 +331,9 @@ def export_csv():
         cols = len(grid[0]) if rows > 0 else 0
 
         with open(file_path, "w") as f:
-            # Write Header
             header = ["Row/Col"] + [f"C{c+1}" for c in range(cols)]
             f.write(",".join(header) + "\n")
 
-            # Write Rows
             for r_idx, row_vals in enumerate(grid):
                 row_str = [f"R{r_idx+1}"] + [("" if v is None else str(v)) for v in row_vals]
                 f.write(",".join(row_str) + "\n")
@@ -310,7 +350,6 @@ def export_csv():
 
 @app.route("/api/export-png", methods=["POST"])
 def export_png():
-    """Generates a styled visual matrix PNG from the sampled grid."""
     data = request.get_json() or {}
     grid = data.get("grid")
     palette = data.get("palette", "viridis")
@@ -322,8 +361,7 @@ def export_png():
     try:
         rows = len(grid)
         cols = len(grid[0]) if rows > 0 else 0
-        cell_size = 35
-        margin = 40
+        cell_size, margin = 35, 40
 
         img_w = cols * cell_size + (margin * 2)
         img_h = rows * cell_size + (margin * 2)
@@ -331,20 +369,17 @@ def export_png():
         img = Image.new("RGB", (img_w, img_h), color=(15, 23, 42))
         draw = ImageDraw.Draw(img)
 
-        # Draw Cells
         for r in range(rows):
             for c in range(cols):
                 val = grid[r][c]
                 x1 = margin + c * cell_size
                 y1 = margin + r * cell_size
-                x2 = x1 + cell_size
-                y2 = y1 + cell_size
+                x2, y2 = x1 + cell_size, y1 + cell_size
 
                 if val is None:
                     color = (30, 41, 59)
                 else:
                     if grid_type == "raw":
-                        # Rescale raw values locally for image rendering
                         all_vals = [v for row in grid for v in row if v is not None]
                         min_v, max_v = (min(all_vals), max(all_vals)) if all_vals else (0, 1)
                         norm_v = (val - min_v) / (max_v - min_v) if max_v > min_v else 0.5

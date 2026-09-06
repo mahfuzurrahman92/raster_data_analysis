@@ -3,32 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RasterLab – Modern GeoTIFF Analysis & Normalization Platform</title>
+    <title>RasterLab – Modern Raster & Image Data Analyzer</title>
     
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-    <!-- Header / Navbar -->
     <header class="navbar">
         <div class="nav-container">
             <a href="#" class="brand">
                 <i class="fa-solid fa-layer-group brand-icon"></i>
                 <span>Raster<span class="highlight">Lab</span> <span class="version-tag">v2.0</span></span>
             </a>
-            <p class="highlight">
-                Syed Mahfuzur Rahman
-
-            </p>
             <nav class="nav-links">
                 <a href="#home" class="nav-link active">Home</a>
                 <a href="#analyzer" class="nav-link">Analyzer</a>
@@ -38,14 +29,13 @@
     </header>
 
     <main>
-        <!-- Hero Section -->
         <section id="home" class="hero-section">
             <div class="hero-content">
                 <h1 class="hero-title">
                     <span id="typed-text"></span><span class="cursor">&nbsp;</span>
                 </h1>
                 <p class="hero-subtitle">
-                    High-performance geospatial raster normalization &amp; matrix analysis suite. Process multi-band GeoTIFFs, sample spatial grids, and export standardized rasters while preserving spatial CRS georeferencing.
+                    High-performance image and geospatial raster normalization suite. Process GeoTIFF, JPG, PNG, and IMG files into normalized formats.
                 </p>
                 <a href="#analyzer" class="btn btn-primary">
                     <i class="fa-solid fa-microchip"></i> Launch Workspace
@@ -53,27 +43,25 @@
             </div>
         </section>
 
-        <!-- Main Dashboard Workspace -->
         <section id="analyzer" class="analyzer-section">
             
             <!-- Step 1: Upload Card -->
             <div class="dashboard-card">
                 <div class="card-header">
-                    <h2><i class="fa-solid fa-cloud-arrow-up"></i> 1. GeoTIFF Dataset Upload</h2>
+                    <h2><i class="fa-solid fa-cloud-arrow-up"></i> 1. File Dataset Upload</h2>
                     <span class="status-badge" id="engine-status"><i class="fa-solid fa-circle"></i> System Ready</span>
                 </div>
 
                 <div class="upload-zone" id="drop-zone">
-                    <input type="file" id="file-input" accept=".tif,.tiff" class="file-input-hidden">
+                    <input type="file" id="file-input" accept=".tif,.tiff,.jpg,.jpeg,.png,.img" class="file-input-hidden">
                     <i class="fa-solid fa-earth-americas upload-icon"></i>
-                    <h3>Drag &amp; Drop GeoTIFF File Here</h3>
-                    <p class="upload-sub">Supports single or multi-band GeoTIFF files (.tif, .tiff) up to 100 MB</p>
+                    <h3>Drag &amp; Drop Image or GeoTIFF Here</h3>
+                    <p class="upload-sub">Supports GeoTIFF (.tif, .tiff) and Images (.jpg, .jpeg, .png, .img) up to 100 MB</p>
                     <button class="btn btn-secondary" id="browse-btn" type="button">
                         <i class="fa-solid fa-folder-open"></i> Browse Files
                     </button>
                 </div>
 
-                <!-- Selected File Display Box -->
                 <div class="file-details hidden" id="file-details">
                     <div class="file-info-content">
                         <i class="fa-solid fa-file-image file-icon"></i>
@@ -88,10 +76,10 @@
                 </div>
             </div>
 
-            <!-- Step 2: Metadata & Band Selection -->
+            <!-- Step 2: Metadata Controls -->
             <div class="dashboard-card hidden" id="metadata-card">
                 <div class="card-header">
-                    <h2><i class="fa-solid fa-circle-info"></i> 2. Raster Information &amp; Controls</h2>
+                    <h2><i class="fa-solid fa-circle-info"></i> 2. Dataset Information &amp; Controls</h2>
                 </div>
 
                 <div class="metadata-grid">
@@ -139,7 +127,6 @@
                     </div>
                 </div>
 
-                <!-- Band & Sampling Controls -->
                 <div class="controls-wrapper">
                     <div class="control-group">
                         <label for="band-select"><i class="fa-solid fa-sliders"></i> Selected Band:</label>
@@ -163,7 +150,6 @@
                     </div>
                 </div>
 
-                <!-- Band Summary Statistics -->
                 <div class="stats-banner">
                     <div class="stat-box">
                         <span class="stat-label">Band Min</span>
@@ -180,17 +166,13 @@
                 </div>
             </div>
 
-            <!-- Step 3: Raw Pixel Grid -->
+            <!-- Step 3: Raw Grid -->
             <div class="dashboard-card hidden" id="raw-grid-card">
                 <div class="card-header">
                     <h2><i class="fa-solid fa-table"></i> 3. Raw Pixel Value Grid</h2>
                     <div class="grid-toggles">
-                        <label class="toggle-label">
-                            <input type="checkbox" id="raw-toggle-labels" checked> Labels
-                        </label>
-                        <label class="toggle-label">
-                            <input type="checkbox" id="raw-toggle-values" checked> Values
-                        </label>
+                        <label class="toggle-label"><input type="checkbox" id="raw-toggle-labels" checked> Labels</label>
+                        <label class="toggle-label"><input type="checkbox" id="raw-toggle-values" checked> Values</label>
                     </div>
                 </div>
 
@@ -199,19 +181,15 @@
                 </div>
 
                 <div class="export-bar">
-                    <button id="export-raw-csv-btn" class="btn btn-outline">
-                        <i class="fa-solid fa-file-csv"></i> Download Raw CSV
-                    </button>
-                    <button id="export-raw-png-btn" class="btn btn-outline">
-                        <i class="fa-solid fa-file-image"></i> Download Raw PNG
-                    </button>
+                    <button id="export-raw-csv-btn" class="btn btn-outline"><i class="fa-solid fa-file-csv"></i> Download Raw CSV</button>
+                    <button id="export-raw-png-btn" class="btn btn-outline"><i class="fa-solid fa-file-image"></i> Download Raw PNG</button>
                 </div>
             </div>
 
-            <!-- Step 4: Normalization Processing -->
+            <!-- Step 4: Normalization Option & Process -->
             <div class="dashboard-card hidden" id="normalize-card">
                 <div class="card-header">
-                    <h2><i class="fa-solid fa-wand-magic-sparkles"></i> 4. Min-Max Normalization</h2>
+                    <h2><i class="fa-solid fa-wand-magic-sparkles"></i> 4. Min-Max Normalization Options</h2>
                 </div>
 
                 <div class="formula-box">
@@ -219,17 +197,25 @@
                     <div class="formula-eq">
                         $$x' = \frac{x - x_{\min}}{x_{\max} - x_{\min}}$$
                     </div>
-                    <p class="formula-sub">Rescales array values into standard range $[0.0, 1.0]$. Invalid NoData pixels and georeferenced spatial transforms are strictly preserved across all bands.</p>
+                    <p class="formula-sub">Rescales values into standard unit range $[0.0, 1.0]$. Select your preferred output file download type below.</p>
                 </div>
 
-                <button id="normalize-btn" class="btn btn-action">
-                    <i class="fa-solid fa-play"></i> Normalize Raster
+                <div class="export-format-selector">
+                    <label for="export-format-select"><i class="fa-solid fa-file-export"></i> Output Download Format:</label>
+                    <select id="export-format-select" class="form-control">
+                        <option value="tif" selected>GeoTIFF / TIFF (.tif)</option>
+                        <option value="png">Portable Network Graphics (.png)</option>
+                        <option value="jpg">JPEG Image (.jpg)</option>
+                    </select>
+                </div>
+
+                <button id="normalize-btn" class="btn btn-action" style="margin-top: 1rem;">
+                    <i class="fa-solid fa-play"></i> Normalize &amp; Generate File
                 </button>
 
-                <!-- Progress Bar -->
                 <div id="progress-container" class="progress-wrapper hidden">
                     <div class="progress-bar-label">
-                        <span>Processing full-resolution raster array...</span>
+                        <span>Processing array normalization...</span>
                         <span id="progress-percent">0%</span>
                     </div>
                     <div class="progress-track">
@@ -238,10 +224,10 @@
                 </div>
             </div>
 
-            <!-- Step 5: Normalized Results & Visualization Grid -->
+            <!-- Step 5: Normalized Output -->
             <div class="dashboard-card hidden" id="normalized-result-card">
                 <div class="card-header">
-                    <h2><i class="fa-solid fa-chart-heatmap"></i> 5. Normalized Raster Output</h2>
+                    <h2><i class="fa-solid fa-chart-heatmap"></i> 5. Normalized Output Grid</h2>
                     <div class="grid-toggles">
                         <label class="toggle-label">
                             <i class="fa-solid fa-palette"></i> Palette:
@@ -252,12 +238,8 @@
                                 <option value="terrain">Terrain</option>
                             </select>
                         </label>
-                        <label class="toggle-label">
-                            <input type="checkbox" id="norm-toggle-labels" checked> Labels
-                        </label>
-                        <label class="toggle-label">
-                            <input type="checkbox" id="norm-toggle-values" checked> Values
-                        </label>
+                        <label class="toggle-label"><input type="checkbox" id="norm-toggle-labels" checked> Labels</label>
+                        <label class="toggle-label"><input type="checkbox" id="norm-toggle-values" checked> Values</label>
                     </div>
                 </div>
 
@@ -266,42 +248,33 @@
                 </div>
 
                 <div class="export-bar">
-                    <button id="export-norm-csv-btn" class="btn btn-outline">
-                        <i class="fa-solid fa-file-csv"></i> Download Normalized CSV
-                    </button>
-                    <button id="export-norm-png-btn" class="btn btn-outline">
-                        <i class="fa-solid fa-file-image"></i> Download Normalized PNG
-                    </button>
+                    <button id="export-norm-csv-btn" class="btn btn-outline"><i class="fa-solid fa-file-csv"></i> Download Normalized CSV</button>
+                    <button id="export-norm-png-btn" class="btn btn-outline"><i class="fa-solid fa-file-image"></i> Download Matrix PNG</button>
                 </div>
 
-                <a id="download-tiff-btn" href="#" class="btn btn-download" download>
-                    <i class="fa-solid fa-download"></i> Download Full Normalized GeoTIFF (.tif)
+                <a id="download-file-btn" href="#" class="btn btn-download" download>
+                    <i class="fa-solid fa-download"></i> Download Normalized File
                 </a>
             </div>
 
         </section>
 
-        <!-- About Section -->
         <section id="about" class="about-section">
             <div class="about-card">
                 <h2><i class="fa-solid fa-circle-info"></i> About RasterLab</h2>
                 <p>
-                    <strong>RasterLab 2.0</strong> is a GIS platform designed for spatial dataset normalization and matrix visualization. By rescaling raw array intensities to unit range $[0, 1]$, users can prepare remote sensing imagery (Landsat, Sentinel, DEMs) for machine learning models and spatial statistics without losing underlying georeferencing metadata.
+                    <strong>RasterLab 2.0</strong> is an image and spatial raster data processing tool. Normalizing pixel range values prepares datasets for analysis while supporting multi-format downloads (.tif, .png, .jpg).
                 </p>
             </div>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2026 RasterLab Spatial Processing Systems. Built for GIS &amp; Remote Sensing Workflows.</p>
-        <p>Syed Mahfuzur Rahman || Student ID: 240408 || URP Discipline || Khulna University</p>
+        <p>&copy; 2026 RasterLab Spatial Processing Systems.</p>
     </footer>
 
-    <!-- MathJax for LaTeX Equation Rendering -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-    <!-- Custom Script -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
