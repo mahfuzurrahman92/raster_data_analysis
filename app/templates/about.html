@@ -69,11 +69,12 @@
             <!-- Card 2: Supervisor / Professor Info -->
             <div class="profile-card dashboard-card">
                 <div class="card-badge badge-purple">Course Instructor</div>
-                <div class="professor-avatar-placeholder">
-                    <i class="fa-solid fa-user-tie"></i>
+                <div class="avatar-wrapper">
+                    <!-- Replace image path with your own image when ready -->
+                    <img src="{{ url_for('static', filename='images/hamim_sir.jpg') }}" alt="Syed Mahfuzur Rahman" class="profile-img" onerror="this.src='https://via.placeholder.com/150/121824/00d2ff?text=SMR';">
                 </div>
                 <h2 class="profile-name">Course Advisor</h2>
-                <p class="profile-role"><i class="fa-solid fa-chalkboard-user"></i> Department Faculty</p>
+                <p class="profile-role"><i class="fa-solid fa-chalkboard-user"></i> Discipline Faculty</p>
                 
                 <p class="prof-desc">
                     Supervising research and practical implementations in Geographic Information Systems (GIS), spatial data analysis, and digital raster processing tools.
@@ -87,8 +88,8 @@
                     <div class="info-item">
                         <span class="info-label">Official Portal</span>
                         <span class="info-value">
-                            <a href="https://ku.ac.bd" target="_blank" class="ext-link">
-                                Khulna University Website <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            <a href="https://ku.ac.bd/discipline/urp/faculty/hamimurp" target="_blank" class="ext-link">
+                                Nur Mohammad Ha-Mim <i class="fa-solid fa-arrow-up-right-from-square"></i>
                             </a>
                         </span>
                     </div>
@@ -98,8 +99,9 @@
             <!-- Card 3: University Info -->
             <div class="profile-card dashboard-card university-card">
                 <div class="card-badge badge-green">Institution</div>
-                <div class="university-logo-wrapper">
-                    <i class="fa-solid fa-building-columns uni-icon"></i>
+                 <div class="avatar-wrapper">
+                    <!-- Replace image path with your own image when ready -->
+                    <img src="{{ url_for('static', filename='images/ku.png') }}" alt="Syed Mahfuzur Rahman" class="profile-img" onerror="this.src='https://via.placeholder.com/150/121824/00d2ff?text=SMR';">
                 </div>
                 <h2 class="profile-name">Khulna University</h2>
                 <p class="profile-role"><i class="fa-solid fa-location-dot"></i> Khulna, Bangladesh</p>
