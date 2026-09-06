@@ -26,7 +26,7 @@
             <nav class="nav-links">
                 <a href="#home" class="nav-link active">Home</a>
                 <a href="#analyzer" class="nav-link">Analyzer</a>
-                <a href="#about" class="nav-link">About</a>
+                <a href="{{ url_for('about') }}" class="nav-link">About</a>
             </nav>
         </div>
     </header>
@@ -262,14 +262,14 @@
 
         </section>
 
-        <section id="about" class="about-section">
+        {% comment %} <section id="about" class="about-section">
             <div class="about-card">
                 <h2><i class="fa-solid fa-circle-info"></i> About RasterLab</h2>
                 <p>
                     <strong>RasterLab 2.0</strong> is an image and spatial raster data processing tool. Normalizing pixel range values prepares datasets for analysis while supporting multi-format downloads (.tif, .png, .jpg).
                 </p>
             </div>
-        </section>
+        </section> {% endcomment %}
     </main>
 
     <footer>
