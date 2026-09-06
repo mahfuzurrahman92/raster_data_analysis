@@ -34,7 +34,9 @@ body {
     top: 0;
     z-index: 1000;
 }
-
+.hamim {
+    color: var(--accent-blue);
+}
 .nav-container {
     max-width: 1200px;
     margin: 0 auto;
