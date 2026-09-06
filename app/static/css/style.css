@@ -424,3 +424,97 @@ footer { text-align: center; padding: 2rem; border-top: 1px solid var(--border-c
 
 @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ==========================================
+   RESPONSIVE LAYOUT FIXES (Mobile & Tablet)
+   ========================================== */
+
+/* Tablet & Mobile Devices (Max Width: 992px) */
+@media screen and (max-width: 992px) {
+    .nav-container {
+        padding: 0.8rem 1.2rem;
+    }
+
+    /* Grid Layouts Stack vertically */
+    .dashboard-grid, 
+    .cards-grid, 
+    .analyzer-container {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem;
+    }
+
+    .sidebar, 
+    .main-content {
+        width: 100% !important;
+    }
+}
+
+/* Mobile Screens (Max Width: 768px) */
+@media screen and (max-width: 768px) {
+    /* Navbar Adjustment */
+    .navbar {
+        position: relative;
+    }
+
+    .nav-container {
+        flex-direction: column;
+        gap: 0.8rem;
+        align-items: center;
+        text-align: center;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 1rem;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .nav-link {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    /* Hero / Title Section */
+    .page-title, .hero-title {
+        font-size: 1.6rem !important;
+    }
+
+    .page-subtitle, .hero-subtitle {
+        font-size: 0.85rem !important;
+        padding: 0 0.5rem;
+    }
+
+    /* Form Controls & Upload Area */
+    .drop-zone, .upload-box {
+        padding: 1.5rem 1rem !important;
+    }
+
+    /* Tables & Data Displays */
+    .table-container, .data-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Buttons Full Width on Small Screens */
+    .btn-action, .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Small Mobile Screens (Max Width: 480px) */
+@media screen and (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+
+    .brand {
+        font-size: 1.2rem;
+    }
+
+    .profile-card, .dashboard-card {
+        padding: 1.2rem 0.8rem !important;
+    }
+}

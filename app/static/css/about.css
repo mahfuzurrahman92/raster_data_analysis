@@ -173,3 +173,39 @@
     width: 100%;
     justify-content: center;
 }
+/* ==========================================
+   ABOUT PAGE RESPONSIVE FIXES
+   ========================================== */
+
+@media screen and (max-width: 900px) {
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .profile-card {
+        max-width: 500px;
+        margin: 0 auto;
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .about-page-container {
+        padding: 1.5rem 1rem;
+    }
+
+    .about-hero {
+        margin-bottom: 2rem;
+    }
+
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.2rem;
+    }
+
+    .info-value {
+        word-break: break-word;
+    }
+}
